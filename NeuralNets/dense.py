@@ -31,12 +31,12 @@ def processData(test_size, shuffle):
 
     X = data.drop(columns=['target'])
     y = data['target']
-    print(f"Columns: {data.columns}")
-    print(f"Unique Targets: {data['target'].unique()}")
+    #print(f"Columns: {data.columns}")
+    #print(f"Unique Targets: {data['target'].unique()}")
     Xarray = X.to_numpy() # Convert to numpy as it will make forward pass in neural network far easier
     Yarray = y.to_numpy() # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    print(f"X Shape: {Xarray.shape}")
-    print(f"Y Shape: {Yarray.shape}")
+    #print(f"X Shape: {Xarray.shape}")
+    #print(f"Y Shape: {Yarray.shape}")
     X_train, X_test, y_train, y_test = train_test_split(Xarray, Yarray, random_state=42, test_size=test_size, shuffle=shuffle)
 
     return X_train, X_test, y_train, y_test
@@ -47,145 +47,86 @@ X_train, X_test, y_train, y_test = processData(test_size=0.2, shuffle=True)
 
 # ----- STEP (2) ----- #    
 """
-Goal: Construct all necessary functions ==> activation functions, dropout, batch normalization, loss, evaluation, etc.
+Goal: Create Necessary Functions
 """
 
-def sigmoid(x):
-    z = 1 / (1 + np.exp(-x))
-    return z
-
-def softmax(x):
-    exp_values = np.exp(x)
-    exp_values_sum = np.sum(exp_values)
- 
-    return exp_values/exp_values_sum
-
 def ReLU(x):
-    if x <= 0:
-        return 0
-    else:
-        return x
+    return np.maximum(0, x)
 
-def cost(prediction, actual):
-    return np.square(prediction - actual)
+def Softmax(x):
+    x = x - np.max(x, axis=0, keepdims=True)  # Subtract max for numerical stability
+    exp_x = np.exp(x)  # Exponentiate the stabilized values
+    return exp_x / np.sum(exp_x, axis=0, keepdims=True)  # Normalize to get probabilities
+
+def CategoricalCrossEntropyLoss(prediction, real):
+    return np.sum(np.multiply(real, np.log10(prediction)))
 
 # ----- STEP (3) ----- #    
 """
-Goal: Neural Network Creation => with forward and backward pass and propogation
-
-Architecture: Strict, DNN ==> 3 Hidden Layers
-
+Goal: Create Neural Network Class
 """
-def neuralNet(takeIN, pushOUT): # PYTORCH Inspiration
-    """
-    Arguments:
+class Dense():
+    def __init__(self, neuronsIN, neuronsOUT):
+        self.neuronsIN = neuronsIN
+        self.neuronsOUT = neuronsOUT
 
-    takeIN - Describes the multiple layers and the amount of matrix input they are getting from the previous layer
-    pushOUT - Describes the number of neurons in the current layer and how much the next layer should expect
+    def create_layer(self):
+        WBs = {
 
-    Note: BTW neural nets are just a bunch of weights and biases combined with non-linear activation function to find
-    pretty damn cool trends in data
-    """
-    np.random.seed(42)
+        }
+        WBs["W"] = np.random.randn(self.neuronsOUT, self.neuronsIN)
+        WBs["b"] = np.random.randn(self.neuronsOUT, 1)
+        
+        return WBs
 
-    W1 = np.random.randn(takeIN[0], pushOUT[0])
-    b1 = np.random.randn(takeIN[0], 1)
+class NeuralNetwork():
+    def __init__(self, layerDIMs):
+        self.layerDIMs = layerDIMs
 
-    W2 = np.random.randn(takeIN[1], pushOUT[1])
-    b2 = np.random.randn(takeIN[1], 1)
+    def initialize(self):
+        layers = {
 
-    W3 = np.random.randn(takeIN[2], pushOUT[2])
-    b3 = np.random.randn(pushOUT[2], 1)
+        }
 
-    WB = {
-        'W1': W1,
-        'b1': b1,
-
-        'W2':W2,
-        'b2':b2,
-
-        'W3':W3,
-        'b3':b3       
-    }
-
-    return WB
-
-def forward_pass(x, weights):
-    W1 = weights['W1']
-    b1 = weights['b1']
+        for i in range(len(self.layerDIMs)):
+            dense_layer = Dense(neuronsIN=self.layerDIMs[i][0], neuronsOUT=self.layerDIMs[i][1])
+            WBs = dense_layer.create_layer()
+            layers[i] = WBs
+        
+        return layers
     
-    W2 = weights['W2']
-    b2 = weights['b2']
-
-    W3 = weights['W3']
-    b3 = weights['b3']
-
-    firstLayer = np.dot(W1, x) + b1#             [****************************] LAYER 1
-    a1 = ReLU(firstLayer)#                          \/\/\/\/\/\/\/\/\/\/\/\/
-    #                                                   \/\/\/\/\/\/\/\/
-    secondLayer = np.dot(W2, a1) + b2#                  [**************] LAYER 2
-    a2 = ReLU(secondLayer)#                              \/\/\/\/\/\/\/
-    #                                                    \/\/\/\/\/\/\/
-    thirdLayer = np.dot(W3, a2) + b3#                      [********] LAYER 3
-    prediction = softmax(thirdLayer)#                       \/\/\/\/
+def forwardPASS(WeightsBiases, input, target_shape):
+    curr_input = input.reshape(-1, 1)  # Initial input is reshaped to column vector (4, 1)
+    for layer in WeightsBiases.keys():
+        WBS = WeightsBiases[layer]
+        
+        out = np.dot(WBS["W"], curr_input) + WBS["b"]
+        
+        # Apply ReLU for hidden layers, or Softmax for the output layer
+        if WBS["W"].shape[0] != target_shape:
+            out = ReLU(out)
+        else:
+            out = Softmax(out)
+            return out  
+        
+        curr_input = out
     
+    return curr_input
 
-    cache = {
-        'W1': W1,
-        'b1':b1,
-        'W2':W2,
-        'b2':b2,
-        'W3':W3,
-        'b3':b3
-    }
-    return prediction, cache
+#def backpropogation(predictions, actual, WeightsBiases):
+    
+#def training_loop(epochs):
 
-def back_prop(prediction, actual, X, cache, alpha):
-    # Output layer error
-    dz3 = prediction - actual  # Gradient of loss with respect to output
-    dW3 = np.dot(dz3.T, cache['a2'])  # Gradient of weights in layer 3
-    db3 = dz3.sum(axis=0)  # Gradient of biases in layer 3
+neuralNET = NeuralNetwork(layerDIMs=[
+    [4, 32], # INPUT, OUTPUT
+    [32, 16],#   ^      ^
+    [16, 3]  #   ^      ^
+    ])
+layers = neuralNET.initialize()
 
-    da2 = np.dot(dz3, cache['W3'])  # Backpropagate through W3
-    dz2 = da2 * (cache['a2'] > 0)  # Derivative of ReLU
-    dW2 = np.dot(dz2.T, cache['a1'])
-    db2 = dz2.sum(axis=0)
-
-    da1 = np.dot(dz2, cache['W2']) 
-    dz1 = da1 * (cache['a1'] > 0)  
-    dW1 = np.dot(dz1.T, X)
-    db1 = dz1.sum(axis=0)
-
-    cache['W3'] -= alpha * dW3
-    cache['b3'] -= alpha * db3
-    cache['W2'] -= alpha * dW2
-    cache['b2'] -= alpha * db2
-    cache['W1'] -= alpha * dW1
-    cache['b1'] -= alpha * db1
-
-    return cache
+prediction = forwardPASS(WeightsBiases=layers, input=X_train[0], target_shape=3)
+print(y_train[0])
+print(prediction)
+print(CategoricalCrossEntropyLoss(prediction.flatten(), y_train))
 
 
-def training(DNN, epochs, X_train, y_train, alpha):
-    for epoch in range(epochs):
-        total_cost = 0
-        for i in range(len(X_train)):
-            x = X_train[i].reshape(1, -1)
-            y = np.zeros((1, 3))
-            y[0, y_train[i]] = 1
-
-            prediction, cache = forward_pass(x, DNN)
-
-            total_cost += np.sum(cost(prediction, y))
-
-            DNN = back_prop(prediction, y, x, cache, alpha)
-
-        print(f"Epoch {epoch + 1}, Cost: {total_cost / len(X_train)}")
-
-
-if __name__ == "__main__":
-
-   takeIN =  [4, 32, 16]
-   pushOUT = [32, 16, 1]
-   WB = neuralNet(takeIN=takeIN, pushOUT=pushOUT)
-   training(DNN=WB, epochs=10, X_train=X_train, y_train=y_train, alpha=0.001)
