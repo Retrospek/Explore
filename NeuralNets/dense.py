@@ -58,8 +58,19 @@ def Softmax(x):
     exp_x = np.exp(x)  # Exponentiate the stabilized values
     return exp_x / np.sum(exp_x, axis=0, keepdims=True)  # Normalize to get probabilities
 
+def encoder(real):
+    if real == 0:
+        real_encoded = [1, 0, 0]
+    elif real == 1:
+        real_encoded = [0, 1, 0]
+    else:
+        real_encoded = [0, 0, 1]
+    
+    return real_encoded
 def CategoricalCrossEntropyLoss(prediction, real):
-    return np.sum(np.multiply(real, np.log10(prediction)))
+    real_encoded = encoder(real)
+
+    return np.sum(np.multiply(real_encoded, np.log10(prediction)))
 
 # ----- STEP (3) ----- #    
 """
@@ -113,7 +124,8 @@ def forwardPASS(WeightsBiases, input, target_shape):
     
     return curr_input
 
-#def backpropogation(predictions, actual, WeightsBiases):
+def backpropogation(predictions, actual_encoded, WeightsBiases):
+    init_gradient = np.subtract(predictions - actual_encoded)
     
 #def training_loop(epochs):
 
@@ -127,6 +139,6 @@ layers = neuralNET.initialize()
 prediction = forwardPASS(WeightsBiases=layers, input=X_train[0], target_shape=3)
 print(y_train[0])
 print(prediction)
-print(CategoricalCrossEntropyLoss(prediction.flatten(), y_train))
+print(CategoricalCrossEntropyLoss(prediction=prediction.flatten(), real=y_train[0]))
 
 
