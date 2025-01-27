@@ -5,22 +5,48 @@ from sklearn import datasets
 
 
 def getIRIS():
+    """
+    Will grab IRIS data and convert into dataframe format
+    """
     iris = datasets.load_iris()
     irisDF = pd.DataFrame(data=iris.data, columns=iris.feature_names)
     irisDF['target'] = iris.target
     return irisDF    
 
-def processData(test_size, shuffle):
-    data = getIRIS() # Nested function call
+def Dataset(test_size, shuffle, batch_size):
 
-    X = data.drop(columns=['target'])
-    y = data['target']
-    #print(f"Columns: {data.columns}")
-    #print(f"Unique Targets: {data['target'].unique()}")
-    Xarray = X.to_numpy() # Convert to numpy as it will make forward pass in neural network far easier
-    Yarray = y.to_numpy() # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    #print(f"X Shape: {Xarray.shape}")
-    #print(f"Y Shape: {Yarray.shape}")
-    X_train, X_test, y_train, y_test = train_test_split(Xarray, Yarray, random_state=42, test_size=test_size, shuffle=shuffle)
+    """
+    Arguments:
+    - Test size: Train, Test split
+    - Shuffle: True/False => Shuffling the data for non-predictable training patterns
+    - batch_size: 
 
-    return X_train, X_test, y_train, y_test
+    Steps:
+    - Shuffle Data
+    - Batch Data
+    - Split the batches
+    """
+
+    # Load Data
+    data = getIRIS()
+    data_length = len(data)
+
+    numpyData = data.values
+    if shuffle == True:
+        shuffledData = np.random.shuffle(numpyData)
+    else:
+        # not shuffled
+        shuffledData = numpyData
+
+    # Find number of batches
+    batches = np.ceil(data_length/batch_size).astype(int) # Convert to float 64, so gotta make in int
+
+    valid_indices
+
+
+def DataLoader():
+
+
+
+
+    
