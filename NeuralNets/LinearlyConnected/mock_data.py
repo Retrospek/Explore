@@ -10,42 +10,52 @@ def getIRIS():
     """
     iris = datasets.load_iris()
     irisDF = pd.DataFrame(data=iris.data, columns=iris.feature_names)
-    irisDF['target'] = iris.target
+    print(irisDF.columns)
+    irisDF['target'] = iris.target  
     return irisDF    
 
-def Dataset(test_size, shuffle, batch_size):
+class Dataset:
+    def __init__(self, data, batch_size, shuffle):
+        """
+        Arguments:
+        - data: Dataframe from the getIRIS method
+        - batch_size: The size for each batch when putting into model
+        - shuffle: If data should be shuffled before being put into the model
 
-    """
-    Arguments:
-    - Test size: Train, Test split
-    - Shuffle: True/False => Shuffling the data for non-predictable training patterns
-    - batch_size: 
+        Goal: 
+        - Initialization: Creates validIdx variables for later calling with the len method
+        """
 
-    Steps:
-    - Shuffle Data
-    - Batch Data
-    - Split the batches
-    """
+        self.data = data
+        if shuffle:
+            self.data = data.sample(frac=1)
+        
+        self.data = self.data.values    
+        
+        self.target = self.data['target']
+        self.features = self.data.drop(columns=['target'])
 
-    # Load Data
-    data = getIRIS()
-    data_length = len(data)
+        valid_indicies = []
 
-    numpyData = data.values
-    if shuffle == True:
-        shuffledData = np.random.shuffle(numpyData)
-    else:
-        # not shuffled
-        shuffledData = numpyData
+        for i in range(0, len(self.data), batch_size):
+            valid_indicies.append(i)
+        self.validIdx = valid_indicies
+        
+    def len(self):
+        """
+        
+        """
+        return len(self.validIdx)
 
-    # Find number of batches
-    batches = np.ceil(data_length/batch_size).astype(int) # Convert to float 64, so gotta make in int
+    def step(self, idx):
+        if idx <= self.validIdx: 
+                                
 
-    valid_indices
+data = getIRIS()
+dataset = Dataset(data, test_size=0.2, shuffle=True, batch_size=32)
 
 
 def DataLoader():
-
 
 
 
