@@ -43,12 +43,17 @@ class Dataset:
         
     def len(self):
         """
-        
+        Arguments:
+        - self
         """
         return len(self.validIdx)
 
     def step(self, idx):
-        if idx <= self.validIdx: 
+        """
+        Arguments:
+        - idx: for the datalaoder method to continuously call the Dataset class
+        """
+        #if idx <= self.validIdx: 
                                 
 
 data = getIRIS()
