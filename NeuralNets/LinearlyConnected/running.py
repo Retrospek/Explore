@@ -1,4 +1,4 @@
-from mock_data import *
+from NeuralNets.LinearlyConnected.dataSourcing import *
 
 data = getIRIS()
 dataset = Dataset(data, shuffle=True, batch_size=32)
