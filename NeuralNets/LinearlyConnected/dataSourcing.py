@@ -10,6 +10,7 @@ def getIRIS():
     """
     iris = datasets.load_iris()
     irisDF = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+    print(f"Length of Data: {len(irisDF)}")
     irisDF['target'] = iris.target  
 
     return irisDF    
@@ -53,9 +54,10 @@ class Dataset:
         - idx: for the datalaoder method to continuously call the Dataset class
         """
 
-        if idx <= len(self.validIdx):
+        if idx <= self.validIdx[-1]:
             # x_batch, y_batch return statement in an array format
-            return [self.features[idx: idx+ self.batch_size], self.target[idx: idx + self.batch_size]]
+            #print(f"One Batched Data Set: {[self.features[idx: idx + self.batch_size], self.target[idx: idx + self.batch_size]]}")
+            return [self.features[idx: idx + self.batch_size], self.target[idx: idx + self.batch_size]]
                                 
 class DataLoader:
     def __init__(self, dataset):
@@ -63,17 +65,17 @@ class DataLoader:
         Arguments:
         - Dataset Object
         """
-        self.dataset = dataset
         self.valid_indices = dataset.validIdx
 
         self.data = []
         # Now we're going to initialize a data array for the dataloader
         for idx in self.valid_indices:
-            if self.dataset.step(idx) != None:
-                self.data.append(self.dataset.step(idx)) 
-        print(f"Tester 1: {self.data}")
-        print(f"Tester 2: {self.data[0]}")
-        print(f"Tester 3: {self.data[0][0]}")
+            print(f"Dataset Index: {idx}")
+            #print(f"Dataset Step: {dataset.step(idx)}")
+            self.data.append(dataset.step(idx)) 
+        #print(f"Tester 1: {self.data}")
+        #print(f"Tester 2: {self.data[0]}")
+        #print(f"Tester 3: {self.data[0][0]}")
 
         # Now you have stored the data in correct batch pairs
         
