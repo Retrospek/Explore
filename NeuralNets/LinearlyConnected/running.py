@@ -9,7 +9,7 @@ dataset = Dataset(data, shuffle=True, batch_size=32)
 dataloader = DataLoader(dataset)
 batched_data = dataloader.data
 
-net = basicNet(inputShape=4, outputShape=1)
+net = basicNet(inputShape=4, outputShape=3)
 loss = cross_entropy_loss()
 
 
@@ -24,11 +24,10 @@ X = np.array(X)
 Y = np.array(Y)
 
 X_train, X_test = X[:train_size], X[train_size:]
-y_train = Y[:train_size], Y[train_size:]
-
+y_train, y_test = Y[:train_size], Y[train_size:]
+print(y_train)
 prediction = net.forward(X_train)
 
 training_loop(alpha=0.001, X_train=X_train, y_train=y_train, criterion=loss, epochs=10, nn=net)
-
 
 print(f"Prediction on X_train Dataset: {prediction}")

@@ -20,12 +20,12 @@ def ReLU(x):
 
 def softmax(x):
     exp_x = np.exp(x - np.max(x))  # Subtracting max for stability
-    return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
+    return exp_x / np.sum(exp_x)
 
 class cross_entropy_loss:
     def __init__(self):
         pass
-    def cost(y_true, y_pred):
+    def cost(self, y_true, y_pred):
         """
         Arguments:
         - y_true: Actual classification, or regression values we're predicting
@@ -35,9 +35,9 @@ class cross_entropy_loss:
         - Cost of a specific training example
         """
         y_pred = np.clip(y_pred, 1e-12, 1.0)  # Avoid log(0) instability
-        return -np.sum(y_true * np.log(y_pred)) / y_true.shape[0]
+        return -np.sum(y_true * np.log(y_pred)) / 1 #y_true.shape[0]
     
-    def gradient(y_true, y_pred):
+    def gradient(self, y_true, y_pred):
         return y_pred - y_true
     
 
@@ -45,13 +45,16 @@ def training_loop(epochs, alpha, X_train, y_train, nn, criterion):
     for epoch in range(epochs):
         epoch_loss = 0
         for x_batch, y_batch in zip(X_train, y_train):
-            prediction = nn.forward(x_batch)
-
-            prediction = np.argmax(prediction)
-            epoch_loss += criterion.cost(y_batch, prediction)
+            print(f"y batch shape: {y_batch.shape}")
+            print(f"x batch shape: {x_batch.shape}")
+            batch_loss = 0
+            probabilities = nn.forward(x_batch)
             
+            batch_loss += criterion.cost(y_batch, probabilities)
+            batch_loss_graduient = criterion.gradient(y_batch, probabilities)
             # Backprop portion
-            for layer in nn.layers:
-                layer.weights = layer.weights - alpha(criterion.gradient(y_batch, x_batch))
+            #temp
+            for layer in nn.layersBP:
+                layer.weights = layer.weights - alpha * batch_loss
         print(f"Epoch Loss ==> {epoch_loss}")
 

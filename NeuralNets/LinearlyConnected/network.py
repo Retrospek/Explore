@@ -71,3 +71,5 @@ class basicNet:
         out = softmax(out)
 
         return out
+    
+    def backpropogation(self, prediction, truth):
