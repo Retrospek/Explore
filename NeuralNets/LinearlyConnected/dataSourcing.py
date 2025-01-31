@@ -10,7 +10,7 @@ def getIRIS():
     """
     iris = datasets.load_iris()
     irisDF = pd.DataFrame(data=iris.data, columns=iris.feature_names)
-    print(f"Length of Data: {len(irisDF)}")
+    #print(f"Length of Data: {len(irisDF)}")
     irisDF['target'] = iris.target  
 
     return irisDF    
@@ -70,7 +70,7 @@ class DataLoader:
         self.data = []
         # Now we're going to initialize a data array for the dataloader
         for idx in self.valid_indices:
-            print(f"Dataset Index: {idx}")
+            #print(f"Dataset Index: {idx}")
             #print(f"Dataset Step: {dataset.step(idx)}")
             self.data.append(dataset.step(idx)) 
         #print(f"Tester 1: {self.data}")

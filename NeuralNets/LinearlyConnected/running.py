@@ -5,18 +5,25 @@ import numpy as np
 
 data = getIRIS()
 dataset = Dataset(data, shuffle=True, batch_size=32)
-#print(f"Valid Indices: {dataset.validIdx}")
-#print(f"Data Set Valid Batches: {dataset.len()}")
 dataloader = DataLoader(dataset)
 batched_data = dataloader.data
-#print(f"Batches: {len(batched_data)}")
+
 net = basicNet(inputShape=4, outputShape=1)
 
 X, Y = batched_data[0]  # Unpack batched data
-X = np.array(X)  # Convert to NumPy array
+
+
+TEST_SIZE = 0.2
+train_size = np.ceil(len(X) * (1-TEST_SIZE)).astype(int)
+# NO need to initialize the test_size as we can just split to the end
+
+X = np.array(X)  
 Y = np.array(Y)
 
-#print(f"X shape: {X.shape}, Y shape: {Y.shape}")  # Verify expected shape
-prediction = net.forward(X)  # Now pass correctly formatted X to the network
+X_train, X_test = X[:train_size], X[train_size:]
+y_train = Y[:train_size], Y[train_size:]
 
-print(prediction)
+prediction = net.forward(X_train)
+
+print(f"Prediction on X_train Dataset: {prediction}")
+
