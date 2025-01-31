@@ -1,5 +1,6 @@
 from dataSourcing import Dataset, DataLoader, getIRIS
 from network import basicNet
+from functions import training_loop, cross_entropy_loss
 import numpy as np
 
 
@@ -9,6 +10,8 @@ dataloader = DataLoader(dataset)
 batched_data = dataloader.data
 
 net = basicNet(inputShape=4, outputShape=1)
+loss = cross_entropy_loss()
+
 
 X, Y = batched_data[0]  # Unpack batched data
 
@@ -25,5 +28,7 @@ y_train = Y[:train_size], Y[train_size:]
 
 prediction = net.forward(X_train)
 
-print(f"Prediction on X_train Dataset: {prediction}")
+training_loop(alpha=0.001, X_train=X_train, y_train=y_train, criterion=loss, epochs=10, nn=net)
 
+
+print(f"Prediction on X_train Dataset: {prediction}")

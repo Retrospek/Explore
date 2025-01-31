@@ -54,10 +54,10 @@ class basicNet:
 
 
         # For backpropogatoin we need to find a way to store the layers into one datastructure, so we can access and do back passing
-        self.layers = [
-            self.dense1,
+        self.layersBP = [
+            self.dense3,
             self.dense2,
-            self.dense3
+            self.dense1
         ]
 
     def forward(self, x):

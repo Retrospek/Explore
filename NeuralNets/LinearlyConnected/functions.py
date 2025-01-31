@@ -23,6 +23,8 @@ def softmax(x):
     return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
 
 class cross_entropy_loss:
+    def __init__(self):
+        pass
     def cost(y_true, y_pred):
         """
         Arguments:
@@ -37,6 +39,19 @@ class cross_entropy_loss:
     
     def gradient(y_true, y_pred):
         return y_pred - y_true
+    
 
+def training_loop(epochs, alpha, X_train, y_train, nn, criterion):
+    for epoch in range(epochs):
+        epoch_loss = 0
+        for x_batch, y_batch in zip(X_train, y_train):
+            prediction = nn.forward(x_batch)
 
- 
+            prediction = np.argmax(prediction)
+            epoch_loss += criterion.cost(y_batch, prediction)
+            
+            # Backprop portion
+            for layer in nn.layers:
+                layer.weights = layer.weights - alpha(criterion.gradient(y_batch, x_batch))
+        print(f"Epoch Loss ==> {epoch_loss}")
+
