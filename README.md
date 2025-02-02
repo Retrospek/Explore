@@ -12,7 +12,5 @@ Starters:
 - This time I'm going to implement all the intracacies and test on small dataset that are well known to see the effects.
 - This repository will be a place for all to maybe get inspiration to dig into ML, or maybe if you just want to "see" what I've been up to
 
-Disclaimer: It is very possible that I discontinue this repo at any time because it's mainly driven by my own personal fullfillment, so whenever that is achieved no need for this anymore
-
 I hope this repo helps someone out there!
 - Arjun Mahableshwarkar
