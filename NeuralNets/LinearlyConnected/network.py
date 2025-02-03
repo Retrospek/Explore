@@ -73,3 +73,12 @@ class basicNet:
         return out
     
     def backpropogation(self, prediction, truth):
+        """
+        Notes:
+        - You need to use the chain rule in order to find the contribution to the error from each neuron or weight
+        - This is the most challenging part that will require some level of for looping from the back, which is the output layer
+          back to the first input layer
+        """
+
+        for i, layer in enumerate(self.layersBP):
+            
