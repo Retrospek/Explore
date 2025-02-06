@@ -24,9 +24,8 @@ class Dense:
         # Not so obvious and intuitive weight initializations
         # Math: Wx + b = Boom output (Z) => W must have some m x r dims and x must have r x n, where m can be = to n
     
-        self.weights = xavier_normal((inputDim, outputDim), n_in=inputDim, n_out=outputDim) # (input,output) dim vector for weights
-        print(f"Weight Shape: {self.weights.shape}")
-        self.biases = np.zeros((outputDim,)) # Just Zeroed out column vector
+        self.weights = np.array(xavier_normal((inputDim, outputDim), n_in=inputDim, n_out=outputDim)).T # (input,output) dim vector for weights
+        self.biases = np.array([np.ones((outputDim,))]).T # Just Zeroed out column vector
 
     def move(self, input):
         """
@@ -35,10 +34,9 @@ class Dense:
         - self of the node, which will hold the weights and biases
         """
 
-        Zed = np.dot(input, self.weights) + self.biases
-
+        Zed = np.dot(self.weights, input) + self.biases
+        print(f"Output: Shape: {Zed.shape}")
         return Zed
-
 
 class basicNet:
     def __init__(self, inputShape, outputShape):
@@ -69,9 +67,10 @@ class basicNet:
         out = ReLU(out)
         
         out = self.dense3.move(out)
+        #print(f"Output Shape: {out.shape}")
         out = softmax(out)
-
-        return out, 
+        #print(f"Softmax Output Shape: {out.shape}")
+        return out
     
     def backpropogation(self, prediction, truth, learning_rate,):
         """
@@ -106,13 +105,12 @@ class basicNet:
         
 import numpy as np
 
-"""
-# Define batch size and input shape
-batch_size = 32
+
+# Define and input shape
 input_dim = 4  # Must match inputShape when initializing basicNet
 
 # Generate dummy input data (batch_size, input_dim)
-X_batch = np.random.rand(batch_size, input_dim)  # Random data for testing
+X_batch = np.random.rand(input_dim)  # Random data for testing
 
 # Initialize the network
 net = basicNet(inputShape=input_dim, outputShape=3)
@@ -124,5 +122,4 @@ predictions = net.forward(X_batch)
 predicted_classes = np.argmax(predictions, axis=1)
 
 print("Predicted Classes for the batch:", predicted_classes)
-print("Predictions Shape:", predictions.shape)  # Should be (32, 3)
-"""
+print("Predictions Shape:", predictions)  # Should be (32, 3)
