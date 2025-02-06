@@ -25,6 +25,7 @@ class Dense:
         # Math: Wx + b = Boom output (Z) => W must have some m x r dims and x must have r x n, where m can be = to n
     
         self.weights = xavier_normal((inputDim, outputDim), n_in=inputDim, n_out=outputDim) # (input,output) dim vector for weights
+        print(f"Weight Shape: {self.weights.shape}")
         self.biases = np.zeros((outputDim,)) # Just Zeroed out column vector
 
     def move(self, input):
@@ -70,9 +71,9 @@ class basicNet:
         out = self.dense3.move(out)
         out = softmax(out)
 
-        return out
+        return out, 
     
-    def backpropogation(self, prediction, truth):
+    def backpropogation(self, prediction, truth, learning_rate,):
         """
         Notes:
         - You need to use the chain rule in order to find the contribution to the error from each neuron or weight
@@ -80,5 +81,48 @@ class basicNet:
           back to the first input layer
         """
 
-        for i, layer in enumerate(self.layersBP):
-            
+        # We need to find the gradient of the loss with respect to the output of the last layer
+        # We can then use this gradient to find the gradient of the loss with respect to the weights and biases of the last layer
+
+        #Because the cost of softmax it's gradient is just pred - true we can compute easily
+        for layer in self.layersBP:
+            print(f"Layer Shape: {layer.weights.shape}")
+            print(f"Prediction Shape: {prediction.shape}")
+            print(f"Truth Shape: {truth.shape}")
+            print(f"Layer Biases Shape: {layer.biases.shape}")
+            print(f"Layer Weights Shape: {layer.weights.shape}")
+
+            # Compute the gradient of the loss with respect to the weights and biases of the layer
+            # We can then use this gradient to update the weights and biases of the layer
+
+
+
+
+
+
+
+
+
+        
+import numpy as np
+
+"""
+# Define batch size and input shape
+batch_size = 32
+input_dim = 4  # Must match inputShape when initializing basicNet
+
+# Generate dummy input data (batch_size, input_dim)
+X_batch = np.random.rand(batch_size, input_dim)  # Random data for testing
+
+# Initialize the network
+net = basicNet(inputShape=input_dim, outputShape=3)
+
+# Forward pass with a batch
+predictions = net.forward(X_batch)
+
+# Get predicted classes
+predicted_classes = np.argmax(predictions, axis=1)
+
+print("Predicted Classes for the batch:", predicted_classes)
+print("Predictions Shape:", predictions.shape)  # Should be (32, 3)
+"""
