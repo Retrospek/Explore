@@ -19,12 +19,13 @@ class Dense:
 
         # Obvious Shape initializations
         self.inputDim = inputDim
-        self.outputDim = outputDim
+        self.outputDim= outputDim
 
         # Not so obvious and intuitive weight initializations
         # Math: Wx + b = Boom output (Z) => W must have some m x r dims and x must have r x n, where m can be = to n
     
-        self.weights = np.array(xavier_normal((inputDim, outputDim), n_in=inputDim, n_out=outputDim)).T # (input,output) dim vector for weights
+        self.weights = np.array(xavier_normal((outputDim, inputDim), n_in=inputDim, n_out=outputDim))
+        #print(f"Weight Shape: {self.weights.shape}")
         self.biases = np.array([np.ones((outputDim,))]).T # Just Zeroed out column vector
 
     def move(self, input):
@@ -33,9 +34,11 @@ class Dense:
         - input of dim (batch_size, input_size)
         - self of the node, which will hold the weights and biases
         """
-
+        #print(f"Input Shape: {input.shape}")
+        #print(f"Weight Shape: {self.weights.shape}")
+        #print(f"Bias Shape: {self.biases.shape}")
         Zed = np.dot(self.weights, input) + self.biases
-        print(f"Output: Shape: {Zed.shape}")
+        print(f"Zed: {Zed}")
         return Zed
 
 class basicNet:
@@ -48,8 +51,8 @@ class basicNet:
         """
 
         self.dense1 = Dense(inputShape, 32)
-        self.dense2 = Dense(32, 32)
-        self.dense3 = Dense(32, outputShape)
+        self.dense2 = Dense(32, 16)
+        self.dense3 = Dense(16, outputShape)
 
 
         # For backpropogatoin we need to find a way to store the layers into one datastructure, so we can access and do back passing
@@ -110,8 +113,7 @@ import numpy as np
 input_dim = 4  # Must match inputShape when initializing basicNet
 
 # Generate dummy input data (batch_size, input_dim)
-X_batch = np.random.rand(input_dim)  # Random data for testing
-
+X_batch = np.array([np.random.rand(input_dim)]).T  # Convert to column vector
 # Initialize the network
 net = basicNet(inputShape=input_dim, outputShape=3)
 
@@ -119,7 +121,7 @@ net = basicNet(inputShape=input_dim, outputShape=3)
 predictions = net.forward(X_batch)
 
 # Get predicted classes
-predicted_classes = np.argmax(predictions, axis=1)
+predicted_classes = np.argmax(predictions, axis=0)
 
-print("Predicted Classes for the batch:", predicted_classes)
-print("Predictions Shape:", predictions)  # Should be (32, 3)
+print(f"Probabilities: {predictions}")
+print("Predictions: ", predicted_classes)  # Should be (3,)

@@ -16,14 +16,13 @@ def xavier_normal(shape, n_in, n_out):
     return np.random.normal(0, std, size=shape)
 
 def ReLU(x):
-    print(f"ReLU Input Shape: {x.shape}")
     return np.maximum(0, x)
 
 def softmax(x):
-    print(f"Softmax Input Shape: {x.shape}")
     # Subtracting max for numerical stability
-    exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))  
-    return exp_x / np.sum(exp_x, axis=1, keepdims=True)  
+    x = x.T[0]
+    exp_x = np.exp(x - np.max(x, keepdims=True))  
+    return exp_x / np.sum(exp_x, keepdims=True)  
 
 class cross_entropy_loss:
     def __init__(self):
