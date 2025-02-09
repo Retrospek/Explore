@@ -16,8 +16,7 @@ def training_loop(epochs, alpha, data, nn, criterion):
                 #print(f"y batch shape: {output.shape}")
                 batch_loss = 0
                 
-                # IMPORTANT: Transpose x_batch so that its shape becomes (input_dim, batch_size)
-                probabilities = nn.forward(input)  # probabilities shape: (output_dim, batch_size)
+                probabilities = nn.forward(input)  
                 #print(f"Probabilities: {probabilities}")
 
                 num_classes = probabilities.shape[0]
