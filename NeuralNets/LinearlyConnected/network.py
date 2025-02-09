@@ -66,13 +66,14 @@ class basicNet:
 
     def forward(self, x):
         out = self.dense1.move(x)
+        #print(f"init shape: {out.shape}")
         out = self.ReLU.forward(out)
 
         out = self.dense2.move(out)
         out = self.ReLU.forward(out)
         
         out = self.dense3.move(out)
-        #print(f"Output Shape: {out.shape}")
+        #print(f"Output Shape: {out[:,0].shape}")
         out = self.softmax.forward(out)
         #print(f"Softmax Output Shape: {out.shape}")
         return out
@@ -148,21 +149,18 @@ class basicNet:
             # Ensure dL_dA is a column vector for the next iteration
             dL_dA = dL_dA.reshape(-1, 1)
             
+"""""
 import numpy as np
 
-# Define and input shape
 input_dim = 4  # Must match inputShape when initializing basicNet
 
-# Generate dummy input data (batch_size, input_dim)
 X_batch = np.array([np.random.rand(input_dim)]).T  # Convert to column vector
-# Initialize the network
 net = basicNet(inputShape=input_dim, outputShape=3)
 
-# Forward pass with a batch
 predictions = net.forward(X_batch)
 back = net.backpropogation(learning_rate=0.01, lossFunction=cross_entropy_loss(), y_true=2, y_pred=predictions)
-# Get predicted classes
 predicted_classes = np.argmax(predictions, axis=0)
 
-#print(f"Probabilities: {predictions}")
-#print("Predictions: ", predicted_classes)  # Should be (3,)
+print(f"Probabilities: {predictions}")
+print("Predictions: ", predicted_classes)  # Should be (3,)
+"""""

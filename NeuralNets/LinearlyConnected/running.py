@@ -5,31 +5,32 @@ import numpy as np
 
 def training_loop(epochs, alpha, data, nn, criterion):
     for epoch in range(epochs):
-        epoch_loss = 0
         for batch in data:
             x_batch = batch[0] 
             y_batch = batch[1] 
-            #print(f"y batch shape: {y_batch.shape}")
-            #print(f"x batch shape: {x_batch.shape}")
-            
-            batch_loss = 0
-            
-            # IMPORTANT: Transpose x_batch so that its shape becomes (input_dim, batch_size)
-            probabilities = nn.forward(x_batch.T)  # probabilities shape: (output_dim, batch_size)
-            
-            predicted_classes = np.argmax(probabilities, axis=0)
+            batch_losses = 0
+            for input, output in zip(x_batch, y_batch):
+                input = np.array([input]).T
+                #print(output)
+                #print(f"x batch shape: {input}")
+                #print(f"y batch shape: {output.shape}")
+                batch_loss = 0
+                
+                # IMPORTANT: Transpose x_batch so that its shape becomes (input_dim, batch_size)
+                probabilities = nn.forward(input)  # probabilities shape: (output_dim, batch_size)
+                #print(f"Probabilities: {probabilities}")
 
-            num_classes = probabilities.shape[0]
-            y_batch_encoded = np.eye(num_classes)[y_batch].T
+                num_classes = probabilities.shape[0]
+                y_true_encoded = np.eye(num_classes)[output]
 
-            batch_loss += criterion.cost(y_batch_encoded, probabilities)
-            print(f"Batch Loss ==> {batch_loss}")
+                batch_loss += criterion.cost(y_true_encoded, probabilities)
+                #print(f"Batch Loss ==> {batch_loss}")
+                
+                nn.backpropogation(learning_rate=alpha, lossFunction=criterion, y_true=output, y_pred=probabilities)
+                
+                batch_losses += batch_loss
             
-            nn.backpropogation(alpha, criterion, y_batch, probabilities)
-            
-            epoch_loss += batch_loss
-        
-        print(f"Epoch Loss ==> {epoch_loss}")
+            print(f"Batch Loss ==> {batch_losses}")
 
 def evaluate(X_test, y_test, nn):
     """
@@ -60,4 +61,4 @@ batched_data = dataloader.data
 net = basicNet(inputShape=4, outputShape=3)
 loss = cross_entropy_loss()
 
-training_loop(epochs=100, alpha=0.01, data=batched_data, nn=net, criterion=loss)
+training_loop(epochs=100, alpha=0.001, data=batched_data, nn=net, criterion=loss)

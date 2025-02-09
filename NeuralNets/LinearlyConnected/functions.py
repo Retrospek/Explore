@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import logsumexp
 
 def xavier_normal(shape, n_in, n_out):
     """
@@ -30,7 +31,7 @@ class softmax:
     # Subtracting max for numerical stability
         x = x.T[0]
         exp_x = np.exp(x - np.max(x, keepdims=True))  
-        return exp_x / np.sum(exp_x, keepdims=True)  
+        return np.exp(x - logsumexp(x))
     
     def gradient(self, x):
         return x * (1 - x)
@@ -47,6 +48,8 @@ class cross_entropy_loss:
         Returns:
         - Cost of a specific training example
         """
+        #print("Prediction: ", y_pred)
+        #print("Actual: ", y_true)
         y_pred = np.clip(y_pred, 1e-12, 1.0)
         
         loss = -np.sum(y_true * np.log(y_pred), axis=0)  # Sum over classes
