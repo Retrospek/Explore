@@ -51,6 +51,7 @@ class basicNet:
         """
 
         self.dense1 = Dense(inputShape, 4)
+        self.dense2 = Dense(4, 4)
         self.dense3 = Dense(4, outputShape)
 
         self.ReLU = ReLU()
@@ -59,7 +60,7 @@ class basicNet:
         # For backpropogatoin we need to find a way to store the layers into one datastructure, so we can access and do back passing
         self.layersBP = [
             (self.dense3, self.softmax),
-            #(self.dense2, self.ReLU),
+            (self.dense2, self.ReLU),
             (self.dense1, self.ReLU)
         ]
 
@@ -67,8 +68,8 @@ class basicNet:
         out = self.dense1.move(x)
         out = self.ReLU.forward(out)
 
-        #out = self.dense2.move(out)
-        #out = self.ReLU.forward(out)
+        out = self.dense2.move(out)
+        out = self.ReLU.forward(out)
         
         out = self.dense3.move(out)
         #print(f"Output Shape: {out.shape}")
@@ -97,42 +98,55 @@ class basicNet:
         */\/
         """
 
-        num_classes = len(y_pred)
-        y_true_encoded = np.eye(num_classes)[y_true] # Pretty important when using cross entropy loss
+        num_classes = y_pred.shape[0]
+        y_true_encoded = np.eye(num_classes)[y_true]  # Pretty important when using cross entropy loss
 
-        print(y_pred.shape)
-        print(y_true_encoded.shape)
         Loss = lossFunction.cost(y_true_encoded, y_pred)
         
+  
         dL_dA = lossFunction.gradient(y_true_encoded, y_pred)
+        # Ensure dL_dA is a column vector (shape: (num_classes, 1))
+        dL_dA = dL_dA.reshape(-1, 1)
 
-        for layer, activation in self.layersBP: # Changer= layer's weights to change
-            dA_dZ = activation.gradient(layer.input)
-
-            dL_dZ = dL_dA * dA_dZ # Chain Rule type shit
-            print(f"Layer Input {layer.input.shape}")
-            print(f"dL_dZ Shape: {dL_dZ.shape}")
+        for layer, activation in self.layersBP: 
+            if activation.__class__.__name__.lower() == "softmax":
+                dA_dZ = np.ones_like(dL_dA)
+            else:
+                dA_dZ = activation.gradient(layer.input)
+                # Ensure dA_dZ is a column vector (should match layer output shape)
+                dA_dZ = dA_dZ.reshape(-1, 1)
+            
+            # Chain Rule: dL_dZ = dL_dA * dA_dZ (element-wise multiplication)
+            dL_dZ = dL_dA * dA_dZ
+            # Debug prints
+            #print(f"Layer Input {layer.input.shape}")
+            #print(f"dL_dZ Shape: {dL_dZ.shape}")
             a = np.array([[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], 
-                                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], 
-                                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], 
-                                    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]])
+                           [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], 
+                           [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], 
+                           [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]])
             b = np.array([[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]]).T
             result = np.dot(a, b)
-            print(a.shape)
-            print(b.shape)
-            print(result)
-            print(dL_dZ.T.shape)
-            print(layer.input.shape)            
-            dL_dW = np.dot(dL_dZ.T, layer.input)  # weights grads
-            dL_dB = np.sum(dL_dZ, keepdims=True)  # idc about this, but good practice
+            #print(a.shape)
+            #print(b.shape)
+            #print(result)
+            # End of debug block           
+            dL_dW = np.dot(dL_dZ, layer.input.T)  # weights grads; result shape: (output_dim, input_dim)
+            #print(dL_dW)
+            dL_dB = np.sum(dL_dZ, keepdims=True)  # Bias gradient (one per neuron)
 
             # Update weights and biases
-            layer.weights -= learning_rate * dL_dW #OOOOooOooOoO nice shit for updating weights
-            layer.biases -= learning_rate * dL_dB
+            #print(f"Old Weights: {layer.weights}")
+            new = layer.weights - learning_rate * dL_dW
+            #print(f"New Weights: {new}")
+            #print(f"Matrix difference {new - layer.weights}")
+            layer.weights -= learning_rate * dL_dW  # Update weights
+            layer.biases -= learning_rate * dL_dB    # Update biases
 
-
-            #VERY VERY FUCKING IMPORTANT, need a cache to store these gradients for next layer
-            dL_dA = np.dot(layer.weights, dL_dZ)
+            # VERY VERY IMPORTANT, need a cache to store these gradients for next layer
+            dL_dA = np.dot(layer.weights.T, dL_dZ)
+            # Ensure dL_dA is a column vector for the next iteration
+            dL_dA = dL_dA.reshape(-1, 1)
             
 import numpy as np
 
@@ -150,5 +164,5 @@ back = net.backpropogation(learning_rate=0.01, lossFunction=cross_entropy_loss()
 # Get predicted classes
 predicted_classes = np.argmax(predictions, axis=0)
 
-print(f"Probabilities: {predictions}")
-print("Predictions: ", predicted_classes)  # Should be (3,)
+#print(f"Probabilities: {predictions}")
+#print("Predictions: ", predicted_classes)  # Should be (3,)
