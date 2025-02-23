@@ -26,7 +26,7 @@ I hope this repo helps someone out there!
   - [Connector](https://devpost.com/software/connector-bdinef)
   - [Roni's Dynamic Dashboard](https://devpost.com/software/roni-s-dynamic-dashbord)
 - **TAMUHack 2024**: [GuardianCV](https://devpost.com/software/guardiancv)
-- **OR & AA Hackathon** hosted by American Airlines ✈️ 2nd Place
+- **OR & AA Hackathon** hosted by American Airlines ✈️ 2nd Place (No devpost :o)
 
 ---
 
