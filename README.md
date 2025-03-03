@@ -10,7 +10,7 @@ I'm documenting my journey in Machine Learning here! 🚀
 - The reason behind implementing these algorithms from scratch is honestly just **self-fulfillment**.
 - This time, I'm going to implement all the **intricacies** and test on small, well-known datasets to observe the effects.
 - This repository will serve as a resource for anyone who wants to **dig into ML** or just **see** what I've been up to.
-
+- Also I'm like getting hella interested in RL rn learning some about theory rn and then sick math behind it
 I hope this repo helps someone out there!
 
 — **Arjun Mahableshwarkar**
