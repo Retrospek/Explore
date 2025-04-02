@@ -5,7 +5,8 @@
 Hey! My name is **Arjun Mahableshwarkar!**
 
 - School: Texas A&M University
-- Focus: Computer Science, Reinforcement Learning/Deep Learning/Machine Learning
+- Major: Computer Science, Hopefully(Math/Stats), and a minor in whatever is left over on the left(<=)
+- Focus: Reinforcement Learning/Deep Learning/Machine Learning
 - Class: Freshman
 
 I'm documenting my journey in Machine Learning here! 🚀
