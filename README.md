@@ -4,6 +4,10 @@
 
 Hey! My name is **Arjun Mahableshwarkar!**
 
+School: Texas A&M University
+Focus: Computer Science, Reinforcement Learning/Deep Learning/Machine Learning
+Class: Freshman
+
 I'm documenting my journey in Machine Learning here! 🚀
 
 ### Starters:
