@@ -37,8 +37,6 @@ I hope this repo helps someone out there!
 
 ## 📅 Upcoming Events:
 
-- **TidalHack 2025** 🌊
-
 ---
 
 ## 📩 Contact Me:
